@@ -45,6 +45,7 @@ class EventProcessor(threading.Thread):
                     for nt in flist:
                         if nt.path.startswith(CACHE_DIR):
                             files_in_use.append(nt.path.split('/')[-1])
+                            logger.debug(f"File in use {nt.path.split('/')[-1]}")
             except:
                 continue
 
@@ -52,6 +53,7 @@ class EventProcessor(threading.Thread):
             if f in files_in_use or f in self.cached_clips:
                 continue
 
+            logger.debug(f"Processing file {f}")
             camera = '-'.join(f.split('-')[:-1])
             start_time = datetime.datetime.strptime(f.split('-')[-1].split('.')[0], '%Y%m%d%H%M%S')
         
@@ -70,6 +72,7 @@ class EventProcessor(threading.Thread):
             p_status = p.wait()
             if p_status == 0:
                 duration = float(output.decode('utf-8').strip())
+                logger.debug(f"Validated with {duration} seconds length")
             else:
                 logger.info(f"bad file: {f}")
                 os.remove(os.path.join(CACHE_DIR,f))
@@ -103,6 +106,10 @@ class EventProcessor(threading.Thread):
 
         while len(sorted_clips) == 0 or sorted_clips[-1]['start_time'] + sorted_clips[-1]['duration'] < event_data['end_time']+post_capture:
             logger.debug(f"No cache clips for {camera}. Waiting...")
+            logger.debug(f"Sorted clips start time {sorted_clips[-1]['start_time']}")
+            logger.debug(f"Sorted clips duration {sorted_clips[-1]['duration']}")
+            logger.debug(f"Event data end time {event_data['end_time']}")
+            logger.debug(f"Post capture setting {post_capture}")
             time.sleep(5)
             self.refresh_cache()
             # get all clips from the camera with the event sorted
