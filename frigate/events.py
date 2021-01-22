@@ -106,10 +106,23 @@ class EventProcessor(threading.Thread):
 
         while len(sorted_clips) == 0 or sorted_clips[-1]['start_time'] + sorted_clips[-1]['duration'] < event_data['end_time']+post_capture:
             logger.debug(f"No cache clips for {camera}. Waiting...")
-            logger.debug(f"Sorted clips start time {sorted_clips[-1]['start_time']}")
-            logger.debug(f"Sorted clips duration {sorted_clips[-1]['duration']}")
-            logger.debug(f"Event data end time {event_data['end_time']}")
-            logger.debug(f"Post capture setting {post_capture}")
+            try:
+                logger.debug(f"Sorted clips start time {sorted_clips[-1]['start_time']}")
+            except:
+                logger.debug(f"CATCH - No start time for clip")
+            try:
+                logger.debug(f"Sorted clips duration {sorted_clips[-1]['duration']}")
+            except:
+                logger.debug(f"CATCH - No duration time for clip")
+            try:
+                logger.debug(f"Event data end time {event_data['end_time']}")
+            except:
+                logger.debug(f"CATCH - No end time for event")
+            try:
+                logger.debug(f"Post capture setting {post_capture}")
+            except:
+                logger.debug(f"CATCH - No post capture time set")
+
             time.sleep(5)
             self.refresh_cache()
             # get all clips from the camera with the event sorted
